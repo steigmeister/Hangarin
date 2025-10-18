@@ -29,10 +29,19 @@ INSTALLED_APPS = [
     'pwa',
 ]
 
-if 'pythonanywhere' in socket.gethostname():
-    SITE_ID = 2 # production site (steigmeistertr.pythhonanywhere.com)
+if os.environ.get('PYTHONANYWHERE_SITE') == 'steigmeistertr.pythonanywhere.com':
+    SITE_ID = 2 # production site
 else:
-    SITE_ID = 3 # local site (127.0.0.1:8000)
+    # Fallback: Check hostname, but this might be unreliable on PA
+    # A more robust check might be needed depending on PA's internal hostname structure
+    hostname = socket.gethostname()
+    # You might need to adjust this check based on the actual hostname seen on your PA account
+    # Common patterns might be like 'steigmeistertr-web-...' or just 'webXX'
+    # For now, let's try a more general check that might work
+    if 'steigmeistertr' in hostname and 'pythonanywhere' in hostname:
+        SITE_ID = 2 # production site
+    else:
+        SITE_ID = 3 # local site (or other non-production)
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
