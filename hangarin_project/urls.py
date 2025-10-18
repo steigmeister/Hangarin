@@ -29,7 +29,7 @@ urlpatterns = [
     # UpdateView
     path('category/<int:pk>/', CategoryUpdateView.as_view(), name='category-update'),
     path('note/<int:pk>/', NoteUpdateView.as_view(), name='note-update'),
-    path('priority/<int:pk>/', NoteUpdateView.as_view(), name='priority-update'),
+    path('priority/<int:pk>/', PriorityUpdateView.as_view(), name='priority-update'),
     path('subtask/<int:pk>/', SubTaskUpdateView.as_view(), name='subtask-update'),
     path('task/<int:pk>/', TaskUpdateView.as_view(), name='task-update'),
 

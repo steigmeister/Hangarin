@@ -5137,11 +5137,14 @@ body {
 }
 
 .card-stats .card-category {
-  margin-top: 0px;
+  margin-bottom: 0.2rem;
+  font-size: 0.85rem;
+  color: #6c757d;
 }
 .card-stats .icon-big {
-  font-size: 3em;
+  font-size: 2.2em;
   min-height: 64px;
+  min-width: 40px;
 }
 
 .card-tasks .table thead th {
@@ -6128,17 +6131,18 @@ body {
   border-color: #23CCEF !important;
 }
 .btn-info:hover, .btn-info:focus, .btn-info:disabled {
-  background: #23CCEF !important;
-  border-color: #23CCEF !important;
+  background-color: #218838 !important;
+  border-color: #1e7e34 !important;
 }
 
 .btn-success {
-  background: #59d05d !important;
-  border-color: #59d05d !important;
+  background-color: #28a745 !important;
+  border-color: #269f42 !important;
+  color: white !important;
 }
 .btn-success:hover, .btn-success:focus, .btn-success:disabled {
-  background: #59d05d !important;
-  border-color: #59d05d !important;
+  background-color: #218838 !important;
+  border-color: #1e7e34 !important;
 }
 
 .btn-warning {

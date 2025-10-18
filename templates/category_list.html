@@ -3,33 +3,56 @@
 {% block content %}
 <div class="content">
   <div class="container-fluid">
-    <h4 class="page-title">Home</h4>
+    <h4 class="page-title">Categories</h4>
     <div class="row">
       <div class="col-md-12">
         <div class="card">
           <div class="card-header">
-            <div class="card-title">List of Organizations</div>
-            <div class="card-category">Page Subtitle</div>
+            <div class="card-title">List of Categories</div>
+            <div class="card-category">Manage task categories (e.g., Work, Personal, etc.)</div>
           </div>
-<div class="col-md-12 row">
-  <div class="col-md-6">
-    <form class="navbar-left navbar-form nav-search mr-md-3" action="">
-      <div class="input-group">
-        <input type="text" placeholder="Search ..." class="form-control" />
-        <div class="input-group-append">
-          <span class="input-group-text">
-            <i class="la la-search search-icon"></i>
-          </span>
-        </div>
-      </div>
-    </form>
-  </div>
-  <div class="col-md-6">
-    <div class="pull-right">
-      <a href="{% url 'category-add' %}" class="btn btn-success btn-rounded">Add Organization</a>
-    </div>
-  </div>
-</div>
+
+          <div class="col-md-12 row mb-3">
+            <div class="col-md-6">
+              <form class="navbar-left navbar-form nav-search mr-md-3" method="get" action="{% url 'category-list' %}">
+                <div class="input-group">
+                  <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Search categories..." class="form-control" />
+                  <div class="input-group-append">
+                    <span class="input-group-text">
+                      <i class="la la-search search-icon"></i>
+                    </span>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="col-md-6 text-right">
+              <a href="{% url 'category-add' %}" class="btn btn-success btn-rounded">Add Category</a>
+            </div>
+          </div>
+          
+          <div class="col-md-12">
+            <form method="get" class="row g-2 align-items-center mb-3">
+              
+              {% if request.GET.q %}
+                <input type="hidden" name="q" value="{{ request.GET.q }}">
+              {% endif %}
+
+              <div class="col-auto">
+                <label for="smallSelect" class="col-form-label">Sort by</label>
+              </div>
+              <div class="col-auto">
+                <select class="form-control form-control-sm" id="smallSelect" name="sort_by">
+                  <option value="name"{% if request.GET.sort_by == "name" %} selected{% endif %}>Name (A-Z)</option>
+                  <option value="-name"{% if request.GET.sort_by == "-name" %} selected{% endif %}>Name (Z-A)</option>
+                  <option value="created_at"{% if request.GET.sort_by == "created_at" %} selected{% endif %}>Newest First</option>
+                  <option value="-created_at"{% if request.GET.sort_by == "-created_at" %} selected{% endif %}>Oldest First</option>
+                </select>
+              </div>
+              <div class="col-auto">
+                <button type="submit" class="btn btn-primary btn-sm btn-rounded">Sort</button>
+              </div>
+            </form>
+          </div>
 
           <div class="card-body">
             <table class="table table-striped mt-3">
@@ -40,18 +63,18 @@
                 </tr>
               </thead>
               <tbody>
-                {% for object in object_list %}
+                {% for category in object_list %}
                 <tr>
-                  <td>{{ object.name }}</td>
+                  <td>{{ category.name }}</td>
                   <td>
-                    <a href="{% url 'category-update' object.pk %}" class="btn btn-secondary btn-rounded">Edit</a>
-                    <a href="{% url 'category-delete' object.pk %}" class="btn btn-danger btn-rounded">Delete</a>
+                    <a href="{% url 'category-update' category.pk %}" class="btn btn-secondary btn-rounded">Edit</a>
+                    <a href="{% url 'category-delete' category.pk %}" class="btn btn-danger btn-rounded">Delete</a>
                   </td>
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="4" style="text-align: center">
-                    <p class="text-sm font-weigh-bold mb-0">No Records Found</p>
+                  <td colspan="2" class="text-center">
+                    <p class="text-sm font-weight-bold mb-0">No categories found.</p>
                   </td>
                 </tr>
                 {% endfor %}

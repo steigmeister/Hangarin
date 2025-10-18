@@ -3,57 +3,89 @@
 {% block content %}
 <div class="content">
   <div class="container-fluid">
-    <h4 class="page-title">Home</h4>
+    <h4 class="page-title">Notes</h4>
     <div class="row">
       <div class="col-md-12">
         <div class="card">
           <div class="card-header">
-            <div class="card-title">Notes</div>
-            <div class="card-category">-----</div>
+            <div class="card-title">List of Notes</div>
+            <div class="card-category">Manage notes attached to tasks</div>
           </div>
-<div class="col-md-12 row">
-  <div class="col-md-6">
-    <form class="navbar-left navbar-form nav-search mr-md-3" action="">
-      <div class="input-group">
-        <input type="text" placeholder="Search ..." class="form-control" />
-        <div class="input-group-append">
-          <span class="input-group-text">
-            <i class="la la-search search-icon"></i>
-          </span>
-        </div>
-      </div>
-    </form>
-  </div>
-  <div class="col-md-6">
-    <div class="pull-right">
-      <a href="{% url 'note-add' %}" class="btn btn-success btn-rounded">Add a Note</a>
-    </div>
-  </div>
-</div>
 
+          <!-- Search and Add Button -->
+          <div class="col-md-12 row mb-3">
+            <div class="col-md-6">
+              <form class="navbar-left navbar-form nav-search mr-md-3" method="get" action="{% url 'note-list' %}">
+                <div class="input-group">
+                  <input 
+                    type="text" 
+                    name="q" 
+                    value="{{ request.GET.q|default:'' }}" 
+                    placeholder="Search notes or tasks..." 
+                    class="form-control" 
+                  />
+                  <div class="input-group-append">
+                    <span class="input-group-text">
+                      <i class="la la-search search-icon"></i>
+                    </span>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="col-md-6 text-right">
+              <a href="{% url 'note-add' %}" class="btn btn-success btn-rounded">Add Note</a>
+            </div>
+          </div>
+
+          <!-- Sort Form (NEW — matches category_list.html style) -->
+          <div class="col-md-12">
+            <form method="get" class="row g-2 align-items-center mb-3">
+              <!-- Preserve search query during sorting -->
+              {% if request.GET.q %}
+                <input type="hidden" name="q" value="{{ request.GET.q }}">
+              {% endif %}
+
+              <div class="col-auto">
+                <label for="sortSelect" class="col-form-label">Sort by</label>
+              </div>
+              <div class="col-auto">
+                <select class="form-control form-control-sm" id="sortSelect" name="sort_by">
+                  <option value="created_at"{% if request.GET.sort_by == "created_at" %} selected{% endif %}>Newest First</option>
+                  <option value="-created_at"{% if request.GET.sort_by == "-created_at" %} selected{% endif %}>Oldest First</option>
+                  <option value="task__title"{% if request.GET.sort_by == "task__title" %} selected{% endif %}>Task (A-Z)</option>
+                  <option value="-task__title"{% if request.GET.sort_by == "-task__title" %} selected{% endif %}>Task (Z-A)</option>
+                </select>
+              </div>
+              <div class="col-auto">
+                <button type="submit" class="btn btn-primary btn-sm btn-rounded">Sort</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Notes Table -->
           <div class="card-body">
             <table class="table table-striped mt-3">
               <thead>
                 <tr>
-                  <th scope="col">Contents</th>
-                  <th scope="col">Tasks</th>
+                  <th scope="col">Content</th>
+                  <th scope="col">Task</th>
                   <th scope="col">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {% for object in object_list %}
+                {% for note in notes %}
                 <tr>
-                  <td>{{ object.content }}</td>
-                  <td>{{ object.task }}</td>
+                  <td>{{ note.content|truncatechars:50 }}</td>
+                  <td>{{ note.task.title }}</td>
                   <td>
-                    <a href="{% url 'note-update' object.pk %}" class="btn btn-secondary btn-rounded">Edit</a>
-                    <a href="{% url 'note-delete' object.pk %}" class="btn btn-danger btn-rounded">Delete</a>
+                    <a href="{% url 'note-update' note.pk %}" class="btn btn-secondary btn-rounded">Edit</a>
+                    <a href="{% url 'note-delete' note.pk %}" class="btn btn-danger btn-rounded">Delete</a>
                   </td>
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="4" style="text-align: center">
-                    <p class="text-sm font-weigh-bold mb-0">No Records Found</p>
+                  <td colspan="3" class="text-center">
+                    <p class="text-sm font-weight-bold mb-0">No notes found.</p>
                   </td>
                 </tr>
                 {% endfor %}

@@ -3,34 +3,70 @@
 {% block content %}
 <div class="content">
   <div class="container-fluid">
-    <h4 class="page-title">Home</h4>
+    <h4 class="page-title">Sub Tasks</h4>
     <div class="row">
       <div class="col-md-12">
         <div class="card">
           <div class="card-header">
             <div class="card-title">List of Sub Tasks</div>
-            <div class="card-category">---------</div>
+            <div class="card-category">Manage subtasks linked to your main tasks</div>
           </div>
-<div class="col-md-12 row">
-  <div class="col-md-6">
-    <form class="navbar-left navbar-form nav-search mr-md-3" action="">
-      <div class="input-group">
-        <input type="text" placeholder="Search ..." class="form-control" />
-        <div class="input-group-append">
-          <span class="input-group-text">
-            <i class="la la-search search-icon"></i>
-          </span>
-        </div>
-      </div>
-    </form>
-  </div>
-  <div class="col-md-6">
-    <div class="pull-right">
-      <a href="{% url 'subtask-add' %}" class="btn btn-success btn-rounded">Add Sub Tasks</a>
-    </div>
-  </div>
-</div>
 
+          <!-- Search and Add Button -->
+          <div class="col-md-12 row mb-3">
+            <div class="col-md-6">
+              <form class="navbar-left navbar-form nav-search mr-md-3" method="get" action="{% url 'subtask-list' %}">
+                <div class="input-group">
+                  <input 
+                    type="text" 
+                    name="q" 
+                    value="{{ request.GET.q|default:'' }}" 
+                    placeholder="Search subtasks, descriptions, status, or task..." 
+                    class="form-control" 
+                  />
+                  <div class="input-group-append">
+                    <span class="input-group-text">
+                      <i class="la la-search search-icon"></i>
+                    </span>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="col-md-6 text-right">
+              <a href="{% url 'subtask-add' %}" class="btn btn-success btn-rounded">Add Sub Task</a>
+            </div>
+          </div>
+
+          <!-- Sorting Form -->
+          <div class="col-md-12">
+            <form method="get" class="row g-2 align-items-center mb-3">
+              <!-- Preserve search query during sorting -->
+              {% if request.GET.q %}
+                <input type="hidden" name="q" value="{{ request.GET.q }}">
+              {% endif %}
+
+              <div class="col-auto">
+                <label for="sortSelect" class="col-form-label">Sort by</label>
+              </div>
+              <div class="col-auto">
+                <select class="form-control form-control-sm" id="sortSelect" name="sort_by">
+                  <option value="title"{% if request.GET.sort_by == "title" %} selected{% endif %}>Title (A-Z)</option>
+                  <option value="-title"{% if request.GET.sort_by == "-title" %} selected{% endif %}>Title (Z-A)</option>
+                  <option value="status"{% if request.GET.sort_by == "status" %} selected{% endif %}>Status (A-Z)</option>
+                  <option value="-status"{% if request.GET.sort_by == "-status" %} selected{% endif %}>Status (Z-A)</option>
+                  <option value="task__title"{% if request.GET.sort_by == "task__title" %} selected{% endif %}>Task (A-Z)</option>
+                  <option value="-task__title"{% if request.GET.sort_by == "-task__title" %} selected{% endif %}>Task (Z-A)</option>
+                  <option value="created_at"{% if request.GET.sort_by == "created_at" %} selected{% endif %}>Oldest First</option>
+                  <option value="-created_at"{% if request.GET.sort_by == "-created_at" %} selected{% endif %}>Newest First</option>
+                </select>
+              </div>
+              <div class="col-auto">
+                <button type="submit" class="btn btn-primary btn-sm btn-rounded">Sort</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- SubTasks Table -->
           <div class="card-body">
             <table class="table table-striped mt-3">
               <thead>
@@ -39,24 +75,25 @@
                   <th scope="col">Description</th>
                   <th scope="col">Status</th>
                   <th scope="col">Task</th>
+                  <th scope="col">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {% for object in object_list %}
+                {% for subtask in subtasks %}
                 <tr>
-                  <td>{{ object.title }}</td>
-                  <td>{{ object.description }}</td>
-                  <td>{{ object.status }}</td>
-                  <td>{{ object.task }}</td>
+                  <td>{{ subtask.title }}</td>
+                  <td>{{ subtask.description|truncatechars:40 }}</td>
+                  <td>{{ subtask.status }}</td>
+                  <td>{{ subtask.task.title }}</td> <!-- Show task title, not object -->
                   <td>
-                    <a href="{% url 'subtask-update' object.pk %}" class="btn btn-secondary btn-rounded">Edit</a>
-                    <a href="{% url 'subtask-delete' object.pk %}" class="btn btn-danger btn-rounded">Delete</a>
+                    <a href="{% url 'subtask-update' subtask.pk %}" class="btn btn-secondary btn-rounded">Edit</a>
+                    <a href="{% url 'subtask-delete' subtask.pk %}" class="btn btn-danger btn-rounded">Delete</a>
                   </td>
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="4" style="text-align: center">
-                    <p class="text-sm font-weigh-bold mb-0">No Records Found</p>
+                  <td colspan="5" class="text-center">
+                    <p class="text-sm font-weight-bold mb-0">No subtasks found.</p>
                   </td>
                 </tr>
                 {% endfor %}
